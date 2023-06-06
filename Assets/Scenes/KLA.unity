@@ -1793,7 +1793,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7df15edde4466ae4c8b4df6b9f0ac79d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 139c8606e07157544b8c28a080115837, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3082,7 +3082,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1c1e4a9755abf624d9e4f204605afca2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d35e91db9021c6749b4478673002f5fe, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3918,6 +3918,10 @@ MonoBehaviour:
     BottomPlayMenu: {fileID: 0}
     PostGameVidTop: {fileID: 0}
     PostGameBottom: {fileID: 0}
+    CombinedVidTop: {fileID: 0}
+    CombinedVidBottom: {fileID: 0}
+    FirstVidEnd: 0
+    SecondVidStart: 0
   - StateVidTop: {fileID: 32900000, guid: e80cdf1483e7cc34a92643c350243a91, type: 3}
     StateVidBottom: {fileID: 32900000, guid: b6cd380b967b780429b2f9056e5df09e, type: 3}
     GameImg: {fileID: 1483825031}
@@ -3927,6 +3931,10 @@ MonoBehaviour:
     BottomPlayMenu: {fileID: 591871461}
     PostGameVidTop: {fileID: 32900000, guid: 96daed5f14f688c43a11321859f6e6b1, type: 3}
     PostGameBottom: {fileID: 32900000, guid: 30b807f0538a6e14dbb431a6e8a108ef, type: 3}
+    CombinedVidTop: {fileID: 32900000, guid: b82d2aef97600474fad52477e4c49616, type: 3}
+    CombinedVidBottom: {fileID: 32900000, guid: d010ceba38b97df4d8e6c36ebfa30ef2, type: 3}
+    FirstVidEnd: 52.03
+    SecondVidStart: 53.04
   - StateVidTop: {fileID: 32900000, guid: e53b8a578069d8546bb2a62cce731e3e, type: 3}
     StateVidBottom: {fileID: 32900000, guid: 2ba844ed48b19d34caa86ab4fb312faa, type: 3}
     GameImg: {fileID: 657923909}
@@ -3936,6 +3944,10 @@ MonoBehaviour:
     BottomPlayMenu: {fileID: 1460239011}
     PostGameVidTop: {fileID: 32900000, guid: a01f76ff3fb218740bfcbd728052c6de, type: 3}
     PostGameBottom: {fileID: 32900000, guid: b360cac46c369994083ff30319e9a7a0, type: 3}
+    CombinedVidTop: {fileID: 32900000, guid: 62a11db37c35f2f4cba5aa1e27b46e6c, type: 3}
+    CombinedVidBottom: {fileID: 32900000, guid: 79d84c4cdd679604592b9bf561332386, type: 3}
+    FirstVidEnd: 30.02
+    SecondVidStart: 31.05
   - StateVidTop: {fileID: 32900000, guid: 72d2f45dee012ad4394c94f53b4ad491, type: 3}
     StateVidBottom: {fileID: 32900000, guid: 4d505d3065f781c4cb9d1eeb865a5b3f, type: 3}
     GameImg: {fileID: 1898603388}
@@ -3945,6 +3957,10 @@ MonoBehaviour:
     BottomPlayMenu: {fileID: 1844698248}
     PostGameVidTop: {fileID: 32900000, guid: 8638db0e921dc4748bbe15508be72514, type: 3}
     PostGameBottom: {fileID: 32900000, guid: ae95966929469e442b88d7ce042fce91, type: 3}
+    CombinedVidTop: {fileID: 32900000, guid: f8b4e971226e87a40b35855bacbfe57e, type: 3}
+    CombinedVidBottom: {fileID: 32900000, guid: e85189eb0ab5b7b4d951ab6b534298e4, type: 3}
+    FirstVidEnd: 42.58
+    SecondVidStart: 43.6
   - StateVidTop: {fileID: 32900000, guid: e0a4aa4d05e8e3b40866760d88ed4ede, type: 3}
     StateVidBottom: {fileID: 32900000, guid: 46310a3a12670b443a1f58ec3a57aa9e, type: 3}
     GameImg: {fileID: 0}
@@ -3954,6 +3970,10 @@ MonoBehaviour:
     BottomPlayMenu: {fileID: 0}
     PostGameVidTop: {fileID: 0}
     PostGameBottom: {fileID: 0}
+    CombinedVidTop: {fileID: 0}
+    CombinedVidBottom: {fileID: 0}
+    FirstVidEnd: 0
+    SecondVidStart: 0
   RTTop: {fileID: 8400000, guid: 8a701d8d97204ae4684a31f19f87eedd, type: 2}
   RTBottom: {fileID: 8400000, guid: 92ca348e1a738d047831a491fa99378b, type: 2}
   RTEmpty: {fileID: 8400000, guid: 53d16bb3104b29e488ccdf6b2231c17f, type: 2}
@@ -13257,7 +13277,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b57e6628e7d9ffd4e8207a93fa26b9fc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8d8727e1f6265f6479ac33f0341aba34, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13534,7 +13554,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 537df0e80f49b8546b811351770e4179, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c24fde71f34a6354fa203d5c7828136b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -16242,7 +16262,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0a313b1ecce5c5a4fb9fe7c56d8e09f7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8d8727e1f6265f6479ac33f0341aba34, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

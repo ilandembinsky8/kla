@@ -115,6 +115,8 @@ public class GameManager : MonoBehaviour
     public Animator Highlight2Anim;
     public Animator Highlight3Anim;
 
+    //bool PlayingCombinedVideo;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -128,15 +130,29 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         //print(Time.timeSinceLevelLoad);
+
+        if (current_state == State.G1Vid && BottomVideoPlayer.time >= StateResourcesList[1].FirstVidEnd)
+        {
+            BottomVideoEnded(null);
+        }
+        else if (current_state == State.G2Vid && BottomVideoPlayer.time >= StateResourcesList[2].FirstVidEnd)
+        {
+            BottomVideoEnded(null);
+        }
+        else if (current_state == State.G3Vid && BottomVideoPlayer.time >= StateResourcesList[3].FirstVidEnd)
+        {
+            BottomVideoEnded(null);
+        }
+
         if (current_state == State.Opening && BottomVideoPlayer.isPlaying && BottomVideoPlayer.time >= 20)
         {
             HighlightMenu(1, true);
         }
-        else if (current_state == State.G1PostGameVid && BottomVideoPlayer.isPlaying && BottomVideoPlayer.time >= 30)
+        else if (current_state == State.G1PostGameVid && BottomVideoPlayer.isPlaying && BottomVideoPlayer.time >= 83)
         {
             HighlightMenu(2, true);
         }
-        else if (current_state == State.G2PostGameVid && BottomVideoPlayer.isPlaying && BottomVideoPlayer.time >= 12)
+        else if (current_state == State.G2PostGameVid && BottomVideoPlayer.isPlaying && BottomVideoPlayer.time >= 43)
         {
             HighlightMenu(3, true);
         }
@@ -145,8 +161,27 @@ public class GameManager : MonoBehaviour
         {
             if (TopVideoRawImage.activeSelf && BottomVideoRawImage.activeSelf)
             {
-                TopVideoPlayer.time = BottomVideoPlayer.clip.length - 3;
-                BottomVideoPlayer.time = BottomVideoPlayer.clip.length - 3;
+                if (current_state == State.G1Vid)
+                {
+                    TopVideoPlayer.time = StateResourcesList[1].FirstVidEnd - 3;
+                    BottomVideoPlayer.time = StateResourcesList[1].FirstVidEnd - 3;
+                }
+                else if (current_state == State.G2Vid)
+                {
+                    TopVideoPlayer.time = StateResourcesList[2].FirstVidEnd - 3;
+                    BottomVideoPlayer.time = StateResourcesList[2].FirstVidEnd - 3;
+                }
+                else if (current_state == State.G3Vid)
+                {
+                    TopVideoPlayer.time = StateResourcesList[3].FirstVidEnd - 3;
+                    BottomVideoPlayer.time = StateResourcesList[3].FirstVidEnd - 3;
+                }
+                else
+                {
+                    TopVideoPlayer.time = BottomVideoPlayer.clip.length - 3;
+                    BottomVideoPlayer.time = BottomVideoPlayer.clip.length - 3;
+                }
+                
             }
         }
         if (Input.GetKeyDown(KeyCode.T))
@@ -638,15 +673,15 @@ public class GameManager : MonoBehaviour
         {
             MoveToState(State.G3PreGame);//G3Game);
         }
-        else if (current_state == State.G1PostGameVid)
+        else if (current_state == State.G1PostGameVid && BottomVideoPlayer.time > BottomVideoPlayer.length - 5)
         {
             MoveToState(State.Ending);
         }
-        else if (current_state == State.G2PostGameVid)
+        else if (current_state == State.G2PostGameVid && BottomVideoPlayer.time > BottomVideoPlayer.length - 5)
         {
             MoveToState(State.Ending);
         }
-        else if (current_state == State.G3PostGameVid)
+        else if (current_state == State.G3PostGameVid && BottomVideoPlayer.time > BottomVideoPlayer.length - 5)
         {
             MoveToState(State.Ending);
         }
@@ -680,27 +715,28 @@ public class GameManager : MonoBehaviour
 
         if (current_state == State.G1Vid)
         {
-            
+            //PlayingCombinedVideo = true;
         }
         else if (current_state == State.G1PostGameVid)
         {
-
+            //PlayingCombinedVideo = true;
         }
         else if (current_state == State.G2Vid)
         {
-            
+            //PlayingCombinedVideo = true;
         }
         else if (current_state == State.G2PostGameVid)
         {
+            //PlayingCombinedVideo = true;
 
         }
         else if (current_state == State.G3Vid)
         {
-            
+            //PlayingCombinedVideo = true;
         }
         else if (current_state == State.G3PostGameVid)
         {
-            
+            //PlayingCombinedVideo = true;
         }
     }
 
@@ -821,6 +857,63 @@ public class GameManager : MonoBehaviour
         //TopVideoPlayer.Play();
         //BottomVideoPlayer.Play();
     }
+
+    private void PlayNewCombinedVid(VideoClip top, VideoClip bottom, int stateNum, bool first)
+    {
+        //StateResourcesList[1].GameImg.SetActive(false);
+        //StateResourcesList[1].GameSuccess.SetActive(false);
+        //StateResourcesList[2].GameImg.SetActive(false);
+        //StateResourcesList[2].GameSuccess.SetActive(false);
+        //StateResourcesList[3].GameImg.SetActive(false);
+        //StateResourcesList[3].GameSuccess.SetActive(false);
+        //$$$TopVideoRawImage.SetActive(true);
+        //$$$BottomVideoRawImage.SetActive(true);
+        StateResourcesList[1].FailureTop.SetActive(false);
+        StateResourcesList[1].GameImg.SetActive(false);
+        StateResourcesList[1].GameSuccess.SetActive(false);
+        StateResourcesList[1].BottomPlayMenu.SetActive(false);
+
+        StateResourcesList[2].FailureTop.SetActive(false);
+        StateResourcesList[2].GameImg.SetActive(false);
+        StateResourcesList[2].GameSuccess.SetActive(false);
+        StateResourcesList[2].BottomPlayMenu.SetActive(false);
+
+        StateResourcesList[3].FailureTop.SetActive(false);
+        StateResourcesList[3].GameImg.SetActive(false);
+        StateResourcesList[3].GameSuccess.SetActive(false);
+        StateResourcesList[3].BottomPlayMenu.SetActive(false);
+
+        if (first)
+        {
+            TopVideoPlayer.Stop();
+            BottomVideoPlayer.Stop();
+            TopVideoRawImage.GetComponent<RawImage>().texture = RTTop;
+            BottomVideoRawImage.GetComponent<RawImage>().texture = RTBottom;
+            TopVideoPlayer.isLooping = false;
+            BottomVideoPlayer.isLooping = false;
+            TopVideoPlayer.clip = top;
+            BottomVideoPlayer.clip = bottom;
+            TopVideoPlayer.Prepare();
+            BottomVideoPlayer.Prepare();
+        }
+        else
+        {
+            TopVideoPlayer.time = StateResourcesList[stateNum].SecondVidStart;
+            BottomVideoPlayer.time = StateResourcesList[stateNum].SecondVidStart;
+            //TopVideoPlayer.Play();
+            //BottomVideoPlayer.Play();
+            Invoke("PlayCombinedVideoEnd", 0.05f);
+        }
+
+        //TopVideoPlayer.Play();
+        //BottomVideoPlayer.Play();
+    }
+
+    private void PlayCombinedVideoEnd()
+    {
+        TopVideoPlayer.Play();
+        BottomVideoPlayer.Play();
+    }
     private void MoveToState(State newState)
     {
         switch (newState)       
@@ -850,7 +943,8 @@ public class GameManager : MonoBehaviour
                 TopVideoPlayer.prepareCompleted += TopVideoPrepared;
                 BottomVideoPlayer.prepareCompleted += BottomVideoPrepared;
                 Menu.sprite = MenuSprites[1];
-                PlayNewVid(StateResourcesList[1].StateVidTop, StateResourcesList[1].StateVidBottom);
+                //PlayNewVid(StateResourcesList[1].StateVidTop, StateResourcesList[1].StateVidBottom);
+                PlayNewCombinedVid(StateResourcesList[1].CombinedVidTop, StateResourcesList[1].CombinedVidBottom, 1, true);
                 current_state = State.G1Vid;
                 break;
             case State.G1Game:
@@ -866,7 +960,7 @@ public class GameManager : MonoBehaviour
             case State.G1PreGame:
                 HightlighsOff();
                 ShowPlayButtons(StateResourcesList[1].PreGameTop, StateResourcesList[1].BottomPlayMenu, StateResourcesList[1].GameImg);
-                PreparePostGameVid(1);
+                //PreparePostGameVid(1);
                 current_state = State.G1Failure;
                 break;
             case State.G1Failure:
@@ -876,7 +970,8 @@ public class GameManager : MonoBehaviour
                 break;
             case State.G1PostGameVid:
                 HightlighsOff();
-                PlayNewVid(StateResourcesList[1].PostGameVidTop, StateResourcesList[1].PostGameBottom);
+                //PlayNewVid(StateResourcesList[1].PostGameVidTop, StateResourcesList[1].PostGameBottom);
+                PlayNewCombinedVid(StateResourcesList[1].CombinedVidTop, StateResourcesList[1].CombinedVidBottom, 1, false);
                 current_state = State.G1PostGameVid;
                 break;
             case State.G2Vid:
@@ -896,7 +991,8 @@ public class GameManager : MonoBehaviour
                 StateResourcesList[3].GameSuccess.SetActive(false);
                 StateResourcesList[3].BottomPlayMenu.SetActive(false);
                 Menu.sprite = MenuSprites[2];
-                PlayNewVid(StateResourcesList[2].StateVidTop, StateResourcesList[2].StateVidBottom);
+                //PlayNewVid(StateResourcesList[2].StateVidTop, StateResourcesList[2].StateVidBottom);
+                PlayNewCombinedVid(StateResourcesList[2].CombinedVidTop, StateResourcesList[2].CombinedVidBottom, 2, true);
                 current_state = State.G2Vid;
                 break;
             case State.G2Game:
@@ -912,7 +1008,7 @@ public class GameManager : MonoBehaviour
             case State.G2PreGame:
                 HightlighsOff();
                 ShowPlayButtons(StateResourcesList[2].PreGameTop, StateResourcesList[2].BottomPlayMenu, StateResourcesList[2].GameImg);
-                PreparePostGameVid(2);
+                //PreparePostGameVid(2);
                 current_state = State.G2PreGame;
                 break;
             case State.G2Failure:
@@ -922,7 +1018,8 @@ public class GameManager : MonoBehaviour
                 break;
             case State.G2PostGameVid:
                 HightlighsOff();
-                PlayNewVid(StateResourcesList[2].PostGameVidTop, StateResourcesList[2].PostGameBottom);
+                //PlayNewVid(StateResourcesList[2].PostGameVidTop, StateResourcesList[2].PostGameBottom);
+                PlayNewCombinedVid(StateResourcesList[2].CombinedVidTop, StateResourcesList[2].CombinedVidBottom, 2, false);
                 current_state = State.G2PostGameVid;
                 break;
             case State.G3Vid:
@@ -942,7 +1039,8 @@ public class GameManager : MonoBehaviour
                 StateResourcesList[3].GameSuccess.SetActive(false);
                 StateResourcesList[3].BottomPlayMenu.SetActive(false);
                 Menu.sprite = MenuSprites[3];
-                PlayNewVid(StateResourcesList[3].StateVidTop, StateResourcesList[3].StateVidBottom);
+                //PlayNewVid(StateResourcesList[3].StateVidTop, StateResourcesList[3].StateVidBottom);
+                PlayNewCombinedVid(StateResourcesList[3].CombinedVidTop, StateResourcesList[3].CombinedVidBottom, 3, true);
                 current_state = State.G3Vid;
                 break;
             case State.G3Game:
@@ -958,7 +1056,7 @@ public class GameManager : MonoBehaviour
             case State.G3PreGame:
                 HightlighsOff();
                 ShowPlayButtons(StateResourcesList[3].PreGameTop, StateResourcesList[3].BottomPlayMenu, StateResourcesList[3].GameImg);
-                PreparePostGameVid(3);
+                //PreparePostGameVid(3);
                 current_state = State.G3PreGame;
                 break;
             case State.G3Failure:
@@ -968,7 +1066,8 @@ public class GameManager : MonoBehaviour
                 break;
             case State.G3PostGameVid:
                 HightlighsOff();
-                PlayNewVid(StateResourcesList[3].PostGameVidTop, StateResourcesList[3].PostGameBottom);
+                //PlayNewVid(StateResourcesList[3].PostGameVidTop, StateResourcesList[3].PostGameBottom);
+                PlayNewCombinedVid(StateResourcesList[3].CombinedVidTop, StateResourcesList[3].CombinedVidBottom, 3, false);
                 current_state = State.G3PostGameVid;
                 break;
             case State.Ending:

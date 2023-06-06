@@ -305,37 +305,41 @@ public class MaskManager : MonoBehaviour
                     
                     {
                         Debug.Log("d - animate home");
-                        drag_on = false;
-                        keep_mag_on_place = true;
-                        first_mousedown_frame = true;
+                        //if (gameManager.current_game == 1)
+                        {
+                            drag_on = false;
+                            keep_mag_on_place = true;
+                            first_mousedown_frame = true;
+
+                            anim_start = transform.position;
+                            animatedHome = true;
+                            //chips.sprite = null;//###
+                            chips.sprite = background;//null;
+                            chips.SetNativeSize();
+                            chips.transform.position = new Vector3(1000, 540, 0);
+                            //Debug.LogError("1111111");
+                            //mark_mode_on = true;
+                            if (gameManager.current_game == 1)
+                            {
+                                button_mag_x.SetActive(true);
+                                //to return x//button_mag_x.GetComponent<Image>().enabled = true;
+                                Invoke("G1_hide_mag_btn_clicked", (interpolationFramesCount / 60.0f));
+
+                                //foreach (Image i in GetComponentsInChildren<Image>()) { i.enabled = false; }
+                                //foreach (GameObject g in chip_x) { g.SetActive(false); }
+                                //button_mag_x.SetActive(true);
+                            }
+                            else if (gameManager.current_game == 2)
+                            {
+                                //to return x//mag_to_drag.sprite = flash_sprite_with_x;
+                                button_mag_x.SetActive(true);
+                                //to return x//button_mag_x.GetComponent<Image>().enabled = true;
+
+                                Invoke("G2_hide_flash_btn_clicked", (interpolationFramesCount / 60.0f));
+                                //button_mag_x.SetActive(true);
+                            }
+                        }
                         
-                        anim_start = transform.position;
-                        animatedHome = true;
-                        //chips.sprite = null;//###
-                        chips.sprite = background;//null;
-                        chips.SetNativeSize();
-                        chips.transform.position = new Vector3(1000, 540, 0);
-                        //Debug.LogError("1111111");
-                        //mark_mode_on = true;
-                        if (gameManager.current_game == 1)
-                        {
-                            button_mag_x.SetActive(true);
-                            //to return x//button_mag_x.GetComponent<Image>().enabled = true;
-                            Invoke("G1_hide_mag_btn_clicked", (interpolationFramesCount/60.0f));
-                            
-                            //foreach (Image i in GetComponentsInChildren<Image>()) { i.enabled = false; }
-                            //foreach (GameObject g in chip_x) { g.SetActive(false); }
-                            //button_mag_x.SetActive(true);
-                        }
-                        else if (gameManager.current_game == 2)
-                        {
-                            //to return x//mag_to_drag.sprite = flash_sprite_with_x;
-                            button_mag_x.SetActive(true);
-                            //to return x//button_mag_x.GetComponent<Image>().enabled = true;
-                            
-                            Invoke("G2_hide_flash_btn_clicked", (interpolationFramesCount / 60.0f));
-                            //button_mag_x.SetActive(true);
-                        }
                     }
 
                     if (gameManager.current_game == 1 && Input.mousePosition.x > 363)
