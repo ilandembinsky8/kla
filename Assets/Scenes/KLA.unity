@@ -1961,7 +1961,6 @@ MonoBehaviour:
   G1_magnify_true2: {fileID: 21300000, guid: 21b0cf1962f255845904b0e4f67c71e4, type: 3}
   G1_magnify_false1: {fileID: 21300000, guid: 00afa6c0e82a25c4599694f9967ee746, type: 3}
   G1_magnify_false2: {fileID: 21300000, guid: c0dcb7c35bde4c443bb6fce72a20c10d, type: 3}
-  interpolationFramesCount: 20
   background: {fileID: 21300000, guid: f2841a32dad0e4d46bfbb7ce088d8638, type: 3}
 --- !u!1 &214207026
 GameObject:
@@ -10928,7 +10927,6 @@ MonoBehaviour:
   G1_magnify_true2: {fileID: 0}
   G1_magnify_false1: {fileID: 0}
   G1_magnify_false2: {fileID: 0}
-  interpolationFramesCount: 20
   background: {fileID: 0}
 --- !u!1 &1416233365
 GameObject:

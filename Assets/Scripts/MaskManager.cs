@@ -31,7 +31,8 @@ public class MaskManager : MonoBehaviour
     public Sprite G1_magnify_false1;
     public Sprite G1_magnify_false2;
 
-    public int interpolationFramesCount; // Number of frames to completely interpolate between the 2 positions
+    //public int interpolationFramesCountG1=20; // Number of frames to completely interpolate between the 2 positions
+    //public int interpolationFramesCountG2=1; // Number of frames to completely interpolate between the 2 positions
     int elapsedFrames = 0;
     bool animatedHome = false;
     Vector3 anim_start;
@@ -159,6 +160,11 @@ public class MaskManager : MonoBehaviour
     {
         if (animatedHome)
         {
+            int interpolationFramesCount = 20;
+            if (gameManager.current_game == 2)
+            {
+                interpolationFramesCount = 1;
+            }
             float interpolationRatio = (float)elapsedFrames / interpolationFramesCount;
             Vector3 interpolatedPosition = Vector3.Lerp(anim_start, anim_end, interpolationRatio);
             transform.position = interpolatedPosition;
@@ -323,7 +329,7 @@ public class MaskManager : MonoBehaviour
                             {
                                 button_mag_x.SetActive(true);
                                 //to return x//button_mag_x.GetComponent<Image>().enabled = true;
-                                Invoke("G1_hide_mag_btn_clicked", (interpolationFramesCount / 60.0f));
+                                Invoke("G1_hide_mag_btn_clicked", (20 / 60.0f));
 
                                 //foreach (Image i in GetComponentsInChildren<Image>()) { i.enabled = false; }
                                 //foreach (GameObject g in chip_x) { g.SetActive(false); }
@@ -335,7 +341,7 @@ public class MaskManager : MonoBehaviour
                                 button_mag_x.SetActive(true);
                                 //to return x//button_mag_x.GetComponent<Image>().enabled = true;
 
-                                Invoke("G2_hide_flash_btn_clicked", (interpolationFramesCount / 60.0f));
+                                Invoke("G2_hide_flash_btn_clicked", (1 / 60.0f));
                                 //button_mag_x.SetActive(true);
                             }
                         }
