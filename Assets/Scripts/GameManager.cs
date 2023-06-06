@@ -26,6 +26,10 @@ public class StateResources
     public GameObject BottomPlayMenu;
     public VideoClip PostGameVidTop;
     public VideoClip PostGameBottom;
+    public VideoClip CombinedVidTop;
+    public VideoClip CombinedVidBottom;
+    public float FirstVidEnd;
+    public float SecondVidStart;
 }
 
 public class GameManager : MonoBehaviour
@@ -123,6 +127,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //print(Time.timeSinceLevelLoad);
         if (current_state == State.Opening && BottomVideoPlayer.isPlaying && BottomVideoPlayer.time >= 20)
         {
             HighlightMenu(1, true);
