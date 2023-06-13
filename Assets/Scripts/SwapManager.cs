@@ -53,7 +53,7 @@ public class SwapManager : MonoBehaviour
                                 second_chip_index = (4 * (2 - curr_chip.y)) + curr_chip.x;
                                 gameManager.g3_chip_cover_objects[second_chip_index].color = new Color(1, 1, 1, 0);
 
-                                Invoke("SwapBackIfNeeded", 2f);
+                                Invoke("SwapBackIfNeeded", 1f);
                                 if (gameManager.g3_chip_objects[first_chip_index].sprite == gameManager.g3_chip_objects[second_chip_index].sprite)
                                 {
                                     //gameManager.AttemptDone(true);

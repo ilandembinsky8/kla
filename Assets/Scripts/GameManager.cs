@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,6 +6,9 @@ using TMPro;
 using System;
 using UnityEngine.Video;
 using UnityEngine.SceneManagement;
+using System.Xml;
+using System.Linq;
+using System.IO;
 
 [System.Serializable]
 public class ChipPos
@@ -30,15 +33,37 @@ public class StateResources
     public VideoClip CombinedVidBottom;
     public float FirstVidEnd;
     public float SecondVidStart;
+    public Sprite PreGameQuestion;
+    public Sprite Explaination;
+    public Sprite Failure;
+    public Sprite Success;
+    public Sprite Play;
+    public Sprite Skip;
+    public float ScanTime;
 }
 
 public class GameManager : MonoBehaviour
 {
+    public LED_Controller LEDController;
     public List<Sprite> MenuSprites;
     public Image Menu;
     public enum State { Opening, G1Vid, G1PreGame, G1Game, G1Success, G1Failure, G1PostGameVid, G2Vid, G2PreGame, G2Game, G2Success, G2Failure, G2PostGameVid, G3Vid, G3PreGame, G3Game, G3Success, G3Failure, G3PostGameVid, Ending}
     public State current_state = State.Opening;
+    string curr_lang = "eng";
 
+    public List<StateResources> EngStateResourcesList;
+    public List<StateResources> HebStateResourcesList;
+    public List<StateResources> ArbStateResourcesList;
+
+    public Sprite LangEng;
+    public Sprite LangHeb;
+    public Sprite LangArb;
+    public Image LangImage;
+
+    public List<GameObject> HebPlaySkip;
+    public List<GameObject> EngPlaySkip;
+    public List<GameObject> ArbPlaySkip;
+    
     public List<StateResources> StateResourcesList;
     public RenderTexture RTTop;
     public RenderTexture RTBottom;
@@ -55,6 +80,12 @@ public class GameManager : MonoBehaviour
     public TMP_Text G1_AttemptsValue;
     public TMP_Text G2_AttemptsValue;
     public TMP_Text G3_AttemptsValue;
+    public Text G1_AttemptsValueHeb;
+    public Text G2_AttemptsValueHeb;
+    public Text G3_AttemptsValueHeb;
+    public Text G1_AttemptsValueArb;
+    public Text G2_AttemptsValueArb;
+    public Text G3_AttemptsValueArb;
     List<List<int>> g1_chips_pos = new List<List<int>>();
     List<List<int>> g3_chips_pos = new List<List<int>>();
     public List<Sprite> g3_chip_sprites;
@@ -115,21 +146,138 @@ public class GameManager : MonoBehaviour
     public Animator Highlight2Anim;
     public Animator Highlight3Anim;
 
+    public Color led_game_won_color1 = new Color(1, 0, 0, 0.5f);
+    public Color led_game_won_color2 = new Color(0, 0, 1, 0.5f);
+    public float led_game_won_duration = 3;
+    public float led_game_won_interval = 0.5f;
+    public Color led_menu_color = Color.white;
+    public float led_menu_fade_in_time = 0.5f;
+    public float led_menu_fade_out_time = 0.5f;
+    public float led_menu_rest_time = 2;
+    public Color led_scan_color1 = new Color(1, 1, 0, 0.5f);
+    public Color led_scan_color2 = Color.white;
+    public float led_scan_time = 2;
+
+    public bool G1_led_scan_sent = false;
+    public bool G2_led_scan_sent = false;
+    public bool G3_led_scan_sent = false;
+
     //bool PlayingCombinedVideo;
 
     // Start is called before the first frame update
     void Start()
     {
+        string lang = PlayerPrefs.GetString("lang");
+        ChangeLang(lang);
         InitStation();
         Application.targetFrameRate = 60;
         TopVideoPlayer.loopPointReached += TopVideoEnded;
         BottomVideoPlayer.loopPointReached += BottomVideoEnded;
+
+        LoadLedColors();
+        //LEDController.Terminate();
+        //LEDController.Fade(Color.green, 0.5f, 0.5f, 3);
+    }
+
+    void LoadLedColors()
+    {
+        string path = Application.streamingAssetsPath + "\\led_colors.ini";
+        if (File.Exists(path))
+        {
+            foreach (string line in File.ReadAllLines(path))
+            {
+                if (line != null && line.Length > 0 && line.Contains(":"))
+                {
+                    string[] split_line = line.Split(':');
+                    {
+                        if (split_line[0] == "game_won_color1") { TryParseColor(split_line[1], led_game_won_color1); }
+                        if (split_line[0] == "game_won_color2") { TryParseColor(split_line[1], led_game_won_color2); }
+                        if (split_line[0] == "game_won_duration") { float.TryParse(split_line[1], out led_game_won_duration); }
+                        if (split_line[0] == "game_won_interval") { float.TryParse(split_line[1], out led_game_won_interval); }
+                        if (split_line[0] == "menu_color") { TryParseColor(split_line[1], led_menu_color); }
+                        if (split_line[0] == "menu_fade_in_time") { float.TryParse(split_line[1], out led_menu_fade_in_time); }
+                        if (split_line[0] == "menu_fade_out_time") { float.TryParse(split_line[1], out led_menu_fade_out_time); }
+                        if (split_line[0] == "menu_rest_time") { float.TryParse(split_line[1], out led_menu_rest_time); }
+                        if (split_line[0] == "scan_color_1") { TryParseColor(split_line[1], led_scan_color1); }
+                        if (split_line[0] == "scan_color_2") { TryParseColor(split_line[1], led_scan_color2); }
+                        if (split_line[0] == "scan_time") { float.TryParse(split_line[1], out led_scan_time); }
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+        /*
+        game_won_color1:1,0,0,0.5
+        game_won_color2:0,0,1,0.5
+        game_won_duration:3
+        game_won_interval:0.5
+        menu_color:1,1,1,1
+        menu_fade_in_time:0.5
+        menu_fade_out_time:0.5
+        menu_rest_time:2
+        scan_color_1:1,1,0,0.5
+        scan_color_1:1,1,1,1
+        scan_time:2
+         */
+
+        led_game_won_color1 = new Color(1, 0, 0, 0.5f);
+        led_game_won_color2 = new Color(0, 0, 1, 0.5f);
+        led_game_won_duration = 3;
+        led_game_won_interval = 0.5f;
+        led_menu_color = Color.white;
+        led_menu_fade_in_time = 0.5f;
+        led_menu_fade_out_time = 0.5f;
+        led_menu_rest_time = 2;
+        led_scan_color1 = new Color(1, 1, 0, 0.5f);
+        led_scan_color2 = Color.white;
+        led_scan_time = 2;
+    }
+
+    private void TryParseColor(string color_str, Color color)
+    {
+        if(color_str != null && color_str.Length > 0 && color_str.Contains(","))
+        {
+            string[] split_color = color_str.Split(',');
+            if (split_color.Count() == 4)
+            {
+                float c1 = float.Parse(split_color[0]);
+                float c2 = float.Parse(split_color[1]);
+                float c3 = float.Parse(split_color[2]);
+                float c4 = float.Parse(split_color[3]);
+                color = new Color(c1, c2, c3, c4);
+            }
+            else { Debug.Log("can't parse led color"); }
+        }
+        else { Debug.Log("can't parse led color"); }
     }
 
     // Update is called once per frame
     void Update()
     {
         //print(Time.timeSinceLevelLoad);
+        if (current_state == State.G1Vid && !G1_led_scan_sent && BottomVideoPlayer.time >= StateResourcesList[1].ScanTime)
+        {
+            G1_led_scan_sent = true;
+            LEDController.Terminate();
+            Debug.Log("send led color scan");
+            LEDController.Scan(led_scan_color1, led_scan_color2, led_scan_time);
+        }
+        else if (current_state == State.G2Vid && !G2_led_scan_sent && BottomVideoPlayer.time >= StateResourcesList[2].ScanTime)
+        {
+            G2_led_scan_sent = true;
+            LEDController.Terminate();
+            Debug.Log("send led color scan");
+            LEDController.Scan(led_scan_color1, led_scan_color2, led_scan_time);
+        }
+        else if (current_state == State.G3Vid && !G3_led_scan_sent && BottomVideoPlayer.time >= StateResourcesList[3].ScanTime)
+        {
+            G3_led_scan_sent = true;
+            LEDController.Terminate();
+            Debug.Log("send led color scan");
+            LEDController.Scan(led_scan_color1, led_scan_color2, led_scan_time);
+        }
 
         if (current_state == State.G1Vid && BottomVideoPlayer.time >= StateResourcesList[1].FirstVidEnd)
         {
@@ -287,6 +435,67 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void HomeButtonClicked()
+    {
+        SetLang("eng");
+        
+    }
+
+    public void SetLang(string lang)
+    {
+        PlayerPrefs.SetString("lang", lang);
+        SceneManager.LoadScene(0);
+    }
+    public void ChangeLang(string lang) 
+    {
+        curr_lang = lang;
+        foreach (GameObject go in HebPlaySkip) { go.SetActive(false); }
+        foreach (GameObject go in EngPlaySkip) { go.SetActive(false); }
+        foreach (GameObject go in ArbPlaySkip) { go.SetActive(false); }
+        switch (lang) 
+        {
+            case "heb":
+                LangImage.sprite = LangHeb;
+                StateResourcesList = HebStateResourcesList;
+                foreach (GameObject go in HebPlaySkip) { go.SetActive(true); }
+                break;
+            case "arb":
+                LangImage.sprite = LangArb;
+                StateResourcesList = ArbStateResourcesList;
+                foreach (GameObject go in ArbPlaySkip) { go.SetActive(true); }
+                break;
+            case "eng":
+            default:
+                LangImage.sprite = LangEng;
+                StateResourcesList = EngStateResourcesList;
+                foreach (GameObject go in EngPlaySkip) { go.SetActive(true); }
+                break;
+        }
+        for (int i = 1; i < 4; i++) 
+        {
+            //bool gameImgActive = StateResourcesList[i].GameImg.activeSelf;
+            //bool preGameTopActive = StateResourcesList[i].PreGameTop.activeSelf;
+            //bool gameSuccessActive = StateResourcesList[i].GameSuccess.activeSelf;
+            //bool failureActive = StateResourcesList[i].FailureTop.activeSelf;
+
+
+            //StateResourcesList[i].GameImg.SetActive(true);
+            //StateResourcesList[i].PreGameTop.SetActive(true);
+            //StateResourcesList[i].GameSuccess.SetActive(true);
+            //StateResourcesList[i].FailureTop.SetActive(true);
+
+            StateResourcesList[i].GameImg.transform.GetChild(0).GetComponent<Image>().sprite = StateResourcesList[i].Explaination;
+            StateResourcesList[i].PreGameTop.transform.GetChild(0).GetComponent<Image>().sprite = StateResourcesList[i].PreGameQuestion;
+            StateResourcesList[i].GameSuccess.transform.GetChild(0).GetComponent<Image>().sprite = StateResourcesList[i].Success;
+            StateResourcesList[i].FailureTop.transform.GetChild(0).GetComponent<Image>().sprite = StateResourcesList[i].Failure;
+
+            //StateResourcesList[i].GameImg.SetActive(gameImgActive);
+            //StateResourcesList[i].PreGameTop.SetActive(preGameTopActive);
+            //StateResourcesList[i].GameSuccess.SetActive(gameSuccessActive);
+            //StateResourcesList[i].FailureTop.SetActive(failureActive);
+        }
+
+    }
     public void G2_showindication(bool successful, float x, float y)
     {
         if (successful)
@@ -307,12 +516,34 @@ public class GameManager : MonoBehaviour
     {
         successes_done++;
     }
+
+    public static string Reverse(string s)
+    {
+        char[] charArray = s.ToCharArray();
+        Array.Reverse(charArray);
+        return new string(charArray);
+    }
+
     public void AttemptDone(bool successfully)
     {
+        string arb_attempts = " محاولات";
+        arb_attempts = Reverse(arb_attempts);
         attempts_done++;
         if (current_game == 1 && (attempts_done < g1_attempts.Count + 1))
         {
-            G1_AttemptsValue.text = g1_attempts.Count - attempts_done + " attempts";
+            switch (curr_lang)
+            {
+                case "heb":
+                    G1_AttemptsValueHeb.text = "תונויסנ " + (g1_attempts.Count - attempts_done);
+                    break;
+                case "arb":
+                    G1_AttemptsValueArb.text = arb_attempts + (g1_attempts.Count - attempts_done);
+                    break;
+                case "eng":
+                default:
+                    G1_AttemptsValue.text = g1_attempts.Count - attempts_done + " attempts";
+                    break;
+            }
             if (successfully)
             {
                 g1_attempts[attempts_done - 1].sprite = g1_post_attempts[0];
@@ -325,7 +556,19 @@ public class GameManager : MonoBehaviour
         }
         else if (current_game == 2 && (attempts_done < g2_attempts.Count + 1))
         {
-            G2_AttemptsValue.text = g2_attempts.Count - attempts_done + " attempts";
+            switch (curr_lang)
+            {
+                case "heb":
+                    G2_AttemptsValueHeb.text = "תונויסנ " + (g2_attempts.Count - attempts_done);
+                    break;
+                case "arb":
+                    G2_AttemptsValueArb.text = arb_attempts + (g2_attempts.Count - attempts_done);
+                    break;
+                case "eng":
+                default:
+                    G2_AttemptsValue.text = g2_attempts.Count - attempts_done + " attempts";
+                    break;
+            }
             if (successfully)
             {
                 g2_attempts[attempts_done - 1].sprite = g2_post_attempts[0];
@@ -337,7 +580,19 @@ public class GameManager : MonoBehaviour
         }
         else if (current_game == 3 && (attempts_done < g3_attempts.Count + 1))
         {
-            G3_AttemptsValue.text = g3_attempts.Count - attempts_done + " attempts";
+            switch (curr_lang)
+            {
+                case "heb":
+                    G3_AttemptsValueHeb.text = "תונויסנ " + (g3_attempts.Count - attempts_done);
+                    break;
+                case "arb":
+                    G3_AttemptsValueArb.text = arb_attempts + (g3_attempts.Count - attempts_done);
+                    break;
+                case "eng":
+                default:
+                    G3_AttemptsValue.text = g3_attempts.Count - attempts_done + " attempts";
+                    break;
+            }
             if (successfully)
             {
                 g3_attempts[attempts_done - 1].sprite = g3_post_attempts[0];
@@ -420,6 +675,8 @@ public class GameManager : MonoBehaviour
     }
     void InitStation()
     {
+        TopVideoPlayer.clip = StateResourcesList[0].StateVidTop;
+        BottomVideoPlayer.clip = StateResourcesList[0].StateVidBottom;
         //InitG1();
         g1_chips_pos.Add(new List<int> { 510, 708, 800, 994, 1078, 1288, 1348, 1546});
         g1_chips_pos.Add(new List<int> { 166, 380, 427, 641, 688, 900});
@@ -471,6 +728,22 @@ public class GameManager : MonoBehaviour
         G1_maskManager.Init();
         G1_hand.SetActive(true);
         G2_hand.SetActive(false);
+
+        string arb_attempts = " محاولات";
+        arb_attempts = Reverse(arb_attempts);
+        switch (curr_lang)
+        {
+            case "heb":
+                G1_AttemptsValueHeb.text = "תונויסנ " + (3);
+                break;
+            case "arb":
+                G1_AttemptsValueArb.text = arb_attempts + (3);
+                break;
+            case "eng":
+            default:
+                G1_AttemptsValue.text = 3 + " attempts";
+                break;
+        }
     }
     void InitG2()
     {
@@ -497,6 +770,22 @@ public class GameManager : MonoBehaviour
         G2_maskManager.Init();
         G1_hand.SetActive(false);
         G2_hand.SetActive(true);
+
+        string arb_attempts = " محاولات";
+        arb_attempts = Reverse(arb_attempts);
+        switch (curr_lang)
+        {
+            case "heb":
+                G2_AttemptsValueHeb.text = "תונויסנ " + (3);
+                break;
+            case "arb":
+                G2_AttemptsValueArb.text = arb_attempts + (3);
+                break;
+            case "eng":
+            default:
+                G2_AttemptsValue.text = 3 + " attempts";
+                break;
+        }
     }
     void InitG3()
     {
@@ -520,6 +809,22 @@ public class GameManager : MonoBehaviour
         swapManager.InitSwap();
         G1_hand.SetActive(false);
         G2_hand.SetActive(false);
+
+        string arb_attempts = " محاولات";
+        arb_attempts = Reverse(arb_attempts);
+        switch (curr_lang)
+        {
+            case "heb":
+                G3_AttemptsValueHeb.text = "תונויסנ " + (3);
+                break;
+            case "arb":
+                G3_AttemptsValueArb.text = arb_attempts + (3);
+                break;
+            case "eng":
+            default:
+                G3_AttemptsValue.text = 3 + " attempts";
+                break;
+        }
     }
 
     void InitCommon()
@@ -592,6 +897,10 @@ public class GameManager : MonoBehaviour
 
     public void G1_Btn_Clicked()
     {
+        LEDController.Terminate();
+        Debug.Log("send led menu fade");
+        LEDController.Fade(led_menu_color, led_menu_fade_in_time, led_menu_fade_out_time, led_menu_rest_time);
+
         //if (current_state == State.Opening)
         {
             MoveToState(State.G1Vid);
@@ -621,6 +930,9 @@ public class GameManager : MonoBehaviour
         HighlightMenu(1, false);
         HighlightMenu(2, false);
         HighlightMenu(3, false);
+
+        G1_hand.SetActive(false);
+        G2_hand.SetActive(false);
     }
     private void HighlightMenu(int index, bool show)
     {
@@ -663,14 +975,20 @@ public class GameManager : MonoBehaviour
         }
         if (current_state == State.G1Vid)
         {
+            TopVideoPlayer.time = StateResourcesList[1].SecondVidStart;
+            BottomVideoPlayer.time = StateResourcesList[1].SecondVidStart;
             MoveToState(State.G1PreGame);//G1Game);
         }
         else if (current_state == State.G2Vid)
         {
+            TopVideoPlayer.time = StateResourcesList[2].SecondVidStart;
+            BottomVideoPlayer.time = StateResourcesList[2].SecondVidStart;
             MoveToState(State.G2PreGame);//.G2Game);
         }
         else if (current_state == State.G3Vid)
         {
+            TopVideoPlayer.time = StateResourcesList[3].SecondVidStart;
+            BottomVideoPlayer.time = StateResourcesList[3].SecondVidStart;
             MoveToState(State.G3PreGame);//G3Game);
         }
         else if (current_state == State.G1PostGameVid && BottomVideoPlayer.time > BottomVideoPlayer.length - 5)
@@ -687,7 +1005,9 @@ public class GameManager : MonoBehaviour
         }
         else if (current_state == State.Ending)
         {
-            SceneManager.LoadScene(0);
+            //ChangeLang("eng");//debug
+            //SceneManager.LoadScene(0);
+            HomeButtonClicked();
         }
     }
 
@@ -761,6 +1081,9 @@ public class GameManager : MonoBehaviour
                 Invoke("MoveToStateG3PostGameVid", 3f);
                 break;
         }
+        LEDController.Terminate();
+        Debug.Log("send led winning flicker");
+        LEDController.Flicker(led_game_won_color1, led_game_won_color2, led_game_won_duration, led_game_won_interval);
     }
 
     private void ShowPlayButtons(GameObject topToShow, GameObject bottomToShow, GameObject game)
@@ -922,6 +1245,10 @@ public class GameManager : MonoBehaviour
                 HightlighsOff();
                 break;
             case State.G1Vid:
+                G1_led_scan_sent = false;
+                G2_led_scan_sent = false;
+                G3_led_scan_sent = false;
+
                 HightlighsOff();
                 StateResourcesList[1].FailureTop.SetActive(false);
                 StateResourcesList[1].GameImg.SetActive(false);
@@ -975,6 +1302,10 @@ public class GameManager : MonoBehaviour
                 current_state = State.G1PostGameVid;
                 break;
             case State.G2Vid:
+                G1_led_scan_sent = false;
+                G2_led_scan_sent = false;
+                G3_led_scan_sent = false;
+
                 HightlighsOff();
                 StateResourcesList[1].FailureTop.SetActive(false);
                 StateResourcesList[1].GameImg.SetActive(false);
@@ -1023,6 +1354,10 @@ public class GameManager : MonoBehaviour
                 current_state = State.G2PostGameVid;
                 break;
             case State.G3Vid:
+                G1_led_scan_sent = false;
+                G2_led_scan_sent = false;
+                G3_led_scan_sent = false;
+
                 HightlighsOff();
                 StateResourcesList[1].FailureTop.SetActive(false);
                 StateResourcesList[1].GameImg.SetActive(false);
