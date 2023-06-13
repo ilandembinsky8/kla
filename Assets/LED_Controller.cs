@@ -1,25 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 [RequireComponent(typeof(SerialController))]
 public class LED_Controller : MonoBehaviour
 {
+    [SerializeField] bool useConfigFile;
+    string cfg = Application.streamingAssetsPath + "/cfg.ini";
     SerialController sc;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         sc = GetComponent<SerialController>();
 
+        if (useConfigFile && File.Exists(cfg))
+        {
+            string text = File.ReadAllLines(cfg)[0];
+            Debug.Log(text);
+            if (text != "")
+            {
+                sc.portName = text;
+                Debug.Log($"COM port set to {sc.portName}");
+            }
+        }
+        else if (useConfigFile)
+        {
+            Debug.LogWarning($"config file {cfg} not found");
+        }
     }
-    
+
     /// <summary>
     /// Scan will produce a top to bottom gradial change
     /// </summary>
     /// <param name="firstColor">The color to start with</param>
     /// <param name="secondColor">The color to end with</param>
     /// <param name="time">transition duration in seconds</param>
-    public void Scan(Color firstColor, Color secondColor, float time){
+    public void Scan(Color firstColor, Color secondColor, float time)
+    {
         RGBW startColor = RGBW.FromColor(firstColor);
         RGBW endColor = RGBW.FromColor(secondColor);
         Debug.Log(startColor);
@@ -34,7 +52,8 @@ public class LED_Controller : MonoBehaviour
     /// <param name="fadeInTime">Time in seconds for color to fade in</param>
     /// <param name="fadeOutTime">Time in seconds for color to fade out</param>
     /// <param name="restTime">Time in seconds between fading in and fading out</param>
-    public void Fade(Color color, float fadeInTime, float fadeOutTime, float restTime){
+    public void Fade(Color color, float fadeInTime, float fadeOutTime, float restTime)
+    {
         string message = $"fade:{RGBW.FromColor(color)}:{fadeInTime}:{fadeOutTime}:{restTime}";
         sc.SendSerialMessage(message);
     }
@@ -45,7 +64,8 @@ public class LED_Controller : MonoBehaviour
     /// <param name="color2">The color for odd-numbered segments</param>
     /// <param name="duration">The duration in seconds of flickering function</param>
     /// <param name="interval">The duration in seconds for each color to show</param>
-    public void Flicker(Color color1, Color color2, float duration, float interval){
+    public void Flicker(Color color1, Color color2, float duration, float interval)
+    {
 
         string message = $"flic:{RGBW.FromColor(color1)}:{RGBW.FromColor(color2)}:{duration}:{interval}";
         sc.SendSerialMessage(message);
@@ -55,16 +75,20 @@ public class LED_Controller : MonoBehaviour
     /// <summary>
     /// Stops the current running operation and set the led to 0 on all channels
     /// </summary>
-    public void Terminate(){
+    public void Terminate()
+    {
         sc.SendSerialMessage("*");
     }
 }
 
-struct RGBW{
+struct RGBW
+{
     public byte R, G, B, W;
 
-    public static RGBW FromColor(Color32 color){
-        return new RGBW{
+    public static RGBW FromColor(Color32 color)
+    {
+        return new RGBW
+        {
             R = (byte)color.r,
             G = (byte)color.g,
             B = (byte)color.b,
