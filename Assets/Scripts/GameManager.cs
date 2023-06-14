@@ -146,6 +146,9 @@ public class GameManager : MonoBehaviour
     public Animator Highlight2Anim;
     public Animator Highlight3Anim;
 
+    bool play_button_restart_timer;
+    float play_button_restart_timer_time;
+
     public Color led_game_won_color1 = new Color(1, 0, 0, 0.5f);
     public Color led_game_won_color2 = new Color(0, 0, 1, 0.5f);
     public float led_game_won_duration = 3;
@@ -256,6 +259,27 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (play_button_restart_timer)
+        {
+            if (play_button_restart_timer_time > 0)
+            {
+                play_button_restart_timer_time -= Time.deltaTime;
+            }
+            else
+            {
+                play_button_restart_timer = false;
+                play_button_restart_timer_time = float.MaxValue;
+                HideGames();
+                StateResourcesList[1].PreGameTop.SetActive(false);
+                StateResourcesList[1].FailureTop.SetActive(false);
+                StateResourcesList[2].PreGameTop.SetActive(false);
+                StateResourcesList[2].FailureTop.SetActive(false);
+                StateResourcesList[3].PreGameTop.SetActive(false);
+                StateResourcesList[3].FailureTop.SetActive(false);
+                MoveToState(State.Ending);
+            }
+        }
+
         //print(Time.timeSinceLevelLoad);
         if (current_state == State.G1Vid && !G1_led_scan_sent && BottomVideoPlayer.time >= StateResourcesList[1].ScanTime)
         {
@@ -534,10 +558,10 @@ public class GameManager : MonoBehaviour
             switch (curr_lang)
             {
                 case "heb":
-                    G1_AttemptsValueHeb.text = "תונויסנ " + (g1_attempts.Count - attempts_done);
+                    G1_AttemptsValueHeb.text = "תונויסינ " + (g1_attempts.Count - attempts_done);
                     break;
                 case "arb":
-                    G1_AttemptsValueArb.text = arb_attempts + (g1_attempts.Count - attempts_done);
+                    G1_AttemptsValueArb.text = (g1_attempts.Count - attempts_done).ToString();
                     break;
                 case "eng":
                 default:
@@ -562,7 +586,7 @@ public class GameManager : MonoBehaviour
                     G2_AttemptsValueHeb.text = "תונויסנ " + (g2_attempts.Count - attempts_done);
                     break;
                 case "arb":
-                    G2_AttemptsValueArb.text = arb_attempts + (g2_attempts.Count - attempts_done);
+                    G2_AttemptsValueArb.text = (g2_attempts.Count - attempts_done).ToString();
                     break;
                 case "eng":
                 default:
@@ -586,7 +610,7 @@ public class GameManager : MonoBehaviour
                     G3_AttemptsValueHeb.text = "תונויסנ " + (g3_attempts.Count - attempts_done);
                     break;
                 case "arb":
-                    G3_AttemptsValueArb.text = arb_attempts + (g3_attempts.Count - attempts_done);
+                    G3_AttemptsValueArb.text = (g3_attempts.Count - attempts_done).ToString();
                     break;
                 case "eng":
                 default:
@@ -734,10 +758,10 @@ public class GameManager : MonoBehaviour
         switch (curr_lang)
         {
             case "heb":
-                G1_AttemptsValueHeb.text = "תונויסנ " + (3);
+                G1_AttemptsValueHeb.text = "תונויסינ " + (3);
                 break;
             case "arb":
-                G1_AttemptsValueArb.text = arb_attempts + (3);
+                G1_AttemptsValueArb.text = "3";
                 break;
             case "eng":
             default:
@@ -776,10 +800,10 @@ public class GameManager : MonoBehaviour
         switch (curr_lang)
         {
             case "heb":
-                G2_AttemptsValueHeb.text = "תונויסנ " + (3);
+                G2_AttemptsValueHeb.text = "תונויסינ " + (3);
                 break;
             case "arb":
-                G2_AttemptsValueArb.text = arb_attempts + (3);
+                G2_AttemptsValueArb.text = "3";
                 break;
             case "eng":
             default:
@@ -809,22 +833,6 @@ public class GameManager : MonoBehaviour
         swapManager.InitSwap();
         G1_hand.SetActive(false);
         G2_hand.SetActive(false);
-
-        string arb_attempts = " محاولات";
-        arb_attempts = Reverse(arb_attempts);
-        switch (curr_lang)
-        {
-            case "heb":
-                G3_AttemptsValueHeb.text = "תונויסנ " + (3);
-                break;
-            case "arb":
-                G3_AttemptsValueArb.text = arb_attempts + (3);
-                break;
-            case "eng":
-            default:
-                G3_AttemptsValue.text = 3 + " attempts";
-                break;
-        }
     }
 
     void InitCommon()
@@ -839,6 +847,9 @@ public class GameManager : MonoBehaviour
 
     public void PlayButtonPressed(bool play)
     {
+        Debug.Log("pre game bool off");
+        play_button_restart_timer = false;
+        play_button_restart_timer_time = float.MaxValue;
         StateResourcesList[1].BottomPlayMenu.SetActive(false);
         StateResourcesList[2].BottomPlayMenu.SetActive(false);
         StateResourcesList[3].BottomPlayMenu.SetActive(false);
@@ -897,6 +908,8 @@ public class GameManager : MonoBehaviour
 
     public void G1_Btn_Clicked()
     {
+        play_button_restart_timer = false;
+        play_button_restart_timer_time = float.MaxValue;
         LEDController.Terminate();
         Debug.Log("send led menu fade");
         LEDController.Fade(led_menu_color, led_menu_fade_in_time, led_menu_fade_out_time, led_menu_rest_time);
@@ -910,6 +923,8 @@ public class GameManager : MonoBehaviour
 
     public void G2_Btn_Clicked()
     {
+        play_button_restart_timer = false;
+        play_button_restart_timer_time = float.MaxValue;
         //if (current_state == State.G1PostGameVid)
         {
             MoveToState(State.G2Vid);
@@ -918,6 +933,8 @@ public class GameManager : MonoBehaviour
     }
     public void G3_Btn_Clicked()
     {
+        play_button_restart_timer = false;
+        play_button_restart_timer_time = float.MaxValue;
         //if (current_state == State.G2PostGameVid)
         {
             MoveToState(State.G3Vid);
@@ -1027,11 +1044,13 @@ public class GameManager : MonoBehaviour
     }
     private void BottomVideoPrepared(VideoPlayer source)
     {
+        //if (current_state == State.G1PostGameVid || current_state == State.G2PostGameVid || current_state == State.G3PostGameVid)
+        //    return;
         TopVideoRawImage.GetComponent<RawImage>().texture = RTTop;
         BottomVideoRawImage.GetComponent<RawImage>().texture = RTBottom;
         TopVideoPlayer.Play();
         BottomVideoPlayer.Play();
-        Invoke("HideGames", 0.5f);
+        Invoke("HideGames", 0.5f);//to
 
         if (current_state == State.G1Vid)
         {
@@ -1072,13 +1091,13 @@ public class GameManager : MonoBehaviour
         switch (current_game)
         {
             case 1:
-                Invoke("MoveToStateG1PostGameVid", 3f);
+                Invoke("MoveToStateG1PostGameVid", 2.65f);
                 break;
             case 2:
-                Invoke("MoveToStateG2PostGameVid", 3f);
+                Invoke("MoveToStateG2PostGameVid", 2.65f);
                 break;
             case 3:
-                Invoke("MoveToStateG3PostGameVid", 3f);
+                Invoke("MoveToStateG3PostGameVid", 2.65f);
                 break;
         }
         LEDController.Terminate();
@@ -1088,6 +1107,10 @@ public class GameManager : MonoBehaviour
 
     private void ShowPlayButtons(GameObject topToShow, GameObject bottomToShow, GameObject game)
     {
+        Debug.Log("pre game bool on");
+        play_button_restart_timer = true;
+        play_button_restart_timer_time = 10;
+
         game.SetActive(false);
         topToShow.SetActive(true);
         bottomToShow.SetActive(true);
@@ -1174,11 +1197,11 @@ public class GameManager : MonoBehaviour
         BottomVideoPlayer.isLooping = false;
         TopVideoPlayer.clip = top;
         BottomVideoPlayer.clip = bottom;
-        TopVideoPlayer.Prepare();
-        BottomVideoPlayer.Prepare();
+        //TopVideoPlayer.Prepare();
+        //BottomVideoPlayer.Prepare();
 
-        //TopVideoPlayer.Play();
-        //BottomVideoPlayer.Play();
+        TopVideoPlayer.Play();//%%%
+        BottomVideoPlayer.Play();//%%%
     }
 
     private void PlayNewCombinedVid(VideoClip top, VideoClip bottom, int stateNum, bool first)
@@ -1191,6 +1214,66 @@ public class GameManager : MonoBehaviour
         //StateResourcesList[3].GameSuccess.SetActive(false);
         //$$$TopVideoRawImage.SetActive(true);
         //$$$BottomVideoRawImage.SetActive(true);
+
+
+        if (first)
+        {
+            StateResourcesList[1].FailureTop.SetActive(false);
+            StateResourcesList[1].GameImg.SetActive(false);
+            StateResourcesList[1].GameSuccess.SetActive(false);
+            StateResourcesList[1].BottomPlayMenu.SetActive(false);
+
+            StateResourcesList[2].FailureTop.SetActive(false);
+            StateResourcesList[2].GameImg.SetActive(false);
+            StateResourcesList[2].GameSuccess.SetActive(false);
+            StateResourcesList[2].BottomPlayMenu.SetActive(false);
+
+            StateResourcesList[3].FailureTop.SetActive(false);
+            StateResourcesList[3].GameImg.SetActive(false);
+            StateResourcesList[3].GameSuccess.SetActive(false);
+            StateResourcesList[3].BottomPlayMenu.SetActive(false);
+
+            TopVideoPlayer.Stop();
+            BottomVideoPlayer.Stop();
+            TopVideoRawImage.GetComponent<RawImage>().texture = RTTop;
+            BottomVideoRawImage.GetComponent<RawImage>().texture = RTBottom;
+            TopVideoPlayer.isLooping = false;
+            BottomVideoPlayer.isLooping = false;
+            TopVideoPlayer.clip = top;
+            BottomVideoPlayer.clip = bottom;
+            //TopVideoPlayer.Prepare();
+            //BottomVideoPlayer.Prepare();
+            TopVideoPlayer.Play();
+            BottomVideoPlayer.Play();
+        }
+        else
+        {
+            TopVideoPlayer.Stop();
+            BottomVideoPlayer.Stop();
+            TopVideoRawImage.GetComponent<RawImage>().texture = RTTop;
+            BottomVideoRawImage.GetComponent<RawImage>().texture = RTBottom;
+            TopVideoPlayer.isLooping = false;
+            BottomVideoPlayer.isLooping = false;
+            //TopVideoPlayer.clip = top;
+            //BottomVideoPlayer.clip = bottom;
+            //TopVideoPlayer.Prepare();
+            //BottomVideoPlayer.Prepare();
+            TopVideoPlayer.time = StateResourcesList[stateNum].SecondVidStart;
+            BottomVideoPlayer.time = StateResourcesList[stateNum].SecondVidStart;
+            TopVideoPlayer.Play();
+            BottomVideoPlayer.Play();
+            
+            //Invoke("PlayCombinedVideoEnd", 0.01f);
+            Invoke("HideGameStuff", 0.4f);
+        }
+
+        //TopVideoPlayer.Play();
+        //BottomVideoPlayer.Play();
+    }
+
+    private void HideGameStuff()
+    {
+        HideGames();
         StateResourcesList[1].FailureTop.SetActive(false);
         StateResourcesList[1].GameImg.SetActive(false);
         StateResourcesList[1].GameSuccess.SetActive(false);
@@ -1205,31 +1288,6 @@ public class GameManager : MonoBehaviour
         StateResourcesList[3].GameImg.SetActive(false);
         StateResourcesList[3].GameSuccess.SetActive(false);
         StateResourcesList[3].BottomPlayMenu.SetActive(false);
-
-        if (first)
-        {
-            TopVideoPlayer.Stop();
-            BottomVideoPlayer.Stop();
-            TopVideoRawImage.GetComponent<RawImage>().texture = RTTop;
-            BottomVideoRawImage.GetComponent<RawImage>().texture = RTBottom;
-            TopVideoPlayer.isLooping = false;
-            BottomVideoPlayer.isLooping = false;
-            TopVideoPlayer.clip = top;
-            BottomVideoPlayer.clip = bottom;
-            TopVideoPlayer.Prepare();
-            BottomVideoPlayer.Prepare();
-        }
-        else
-        {
-            TopVideoPlayer.time = StateResourcesList[stateNum].SecondVidStart;
-            BottomVideoPlayer.time = StateResourcesList[stateNum].SecondVidStart;
-            //TopVideoPlayer.Play();
-            //BottomVideoPlayer.Play();
-            Invoke("PlayCombinedVideoEnd", 0.05f);
-        }
-
-        //TopVideoPlayer.Play();
-        //BottomVideoPlayer.Play();
     }
 
     private void PlayCombinedVideoEnd()
@@ -1267,8 +1325,8 @@ public class GameManager : MonoBehaviour
 
 
 
-                TopVideoPlayer.prepareCompleted += TopVideoPrepared;
-                BottomVideoPlayer.prepareCompleted += BottomVideoPrepared;
+                //TopVideoPlayer.prepareCompleted += TopVideoPrepared;
+                //BottomVideoPlayer.prepareCompleted += BottomVideoPrepared;
                 Menu.sprite = MenuSprites[1];
                 //PlayNewVid(StateResourcesList[1].StateVidTop, StateResourcesList[1].StateVidBottom);
                 PlayNewCombinedVid(StateResourcesList[1].CombinedVidTop, StateResourcesList[1].CombinedVidBottom, 1, true);
@@ -1298,8 +1356,8 @@ public class GameManager : MonoBehaviour
             case State.G1PostGameVid:
                 HightlighsOff();
                 //PlayNewVid(StateResourcesList[1].PostGameVidTop, StateResourcesList[1].PostGameBottom);
-                PlayNewCombinedVid(StateResourcesList[1].CombinedVidTop, StateResourcesList[1].CombinedVidBottom, 1, false);
                 current_state = State.G1PostGameVid;
+                PlayNewCombinedVid(StateResourcesList[1].CombinedVidTop, StateResourcesList[1].CombinedVidBottom, 1, false);
                 break;
             case State.G2Vid:
                 G1_led_scan_sent = false;
@@ -1350,8 +1408,8 @@ public class GameManager : MonoBehaviour
             case State.G2PostGameVid:
                 HightlighsOff();
                 //PlayNewVid(StateResourcesList[2].PostGameVidTop, StateResourcesList[2].PostGameBottom);
-                PlayNewCombinedVid(StateResourcesList[2].CombinedVidTop, StateResourcesList[2].CombinedVidBottom, 2, false);
                 current_state = State.G2PostGameVid;
+                PlayNewCombinedVid(StateResourcesList[2].CombinedVidTop, StateResourcesList[2].CombinedVidBottom, 2, false);
                 break;
             case State.G3Vid:
                 G1_led_scan_sent = false;
@@ -1402,8 +1460,8 @@ public class GameManager : MonoBehaviour
             case State.G3PostGameVid:
                 HightlighsOff();
                 //PlayNewVid(StateResourcesList[3].PostGameVidTop, StateResourcesList[3].PostGameBottom);
-                PlayNewCombinedVid(StateResourcesList[3].CombinedVidTop, StateResourcesList[3].CombinedVidBottom, 3, false);
                 current_state = State.G3PostGameVid;
+                PlayNewCombinedVid(StateResourcesList[3].CombinedVidTop, StateResourcesList[3].CombinedVidBottom, 3, false);
                 break;
             case State.Ending:
                 HightlighsOff();
