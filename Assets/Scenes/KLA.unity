@@ -4928,7 +4928,7 @@ MonoBehaviour:
     Skip: {fileID: 0}
     ScanTime: 0
   HebStateResourcesList:
-  - StateVidTop: {fileID: 32900000, guid: ef160bcd30fcc2244bd335f123b197a8, type: 3}
+  - StateVidTop: {fileID: 32900000, guid: 3b12844ef3cead74fadcccbf4b4ebb5c, type: 3}
     StateVidBottom: {fileID: 32900000, guid: 2cae677f66311784387ff8b4d851abec, type: 3}
     GameImg: {fileID: 0}
     GameSuccess: {fileID: 0}
@@ -5029,7 +5029,7 @@ MonoBehaviour:
     Skip: {fileID: 0}
     ScanTime: 0
   ArbStateResourcesList:
-  - StateVidTop: {fileID: 32900000, guid: edb88dceb490e204387e19070dc5f3b7, type: 3}
+  - StateVidTop: {fileID: 32900000, guid: 9c7a6af4db4fa874da773cae7d0e2ef3, type: 3}
     StateVidBottom: {fileID: 32900000, guid: b4c338dc7bcd60643be8e4e515d7afa4, type: 3}
     GameImg: {fileID: 0}
     GameSuccess: {fileID: 0}
