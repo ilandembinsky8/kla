@@ -165,6 +165,10 @@ public class GameManager : MonoBehaviour
     public bool G2_led_scan_sent = false;
     public bool G3_led_scan_sent = false;
 
+    public Image G1_play_buttons_exp;
+    public Image G2_play_buttons_exp;
+    public Image G3_play_buttons_exp;
+
     //bool PlayingCombinedVideo;
 
     // Start is called before the first frame update
@@ -1105,15 +1109,16 @@ public class GameManager : MonoBehaviour
         LEDController.Flicker(led_game_won_color1, led_game_won_color2, led_game_won_duration, led_game_won_interval);
     }
 
-    private void ShowPlayButtons(GameObject topToShow, GameObject bottomToShow, GameObject game)
+    private void ShowPlayButtons(GameObject topToShow, GameObject bottomToShow, GameObject game, Image play_btn_exp, int game_id)
     {
         Debug.Log("pre game bool on");
         play_button_restart_timer = true;
-        play_button_restart_timer_time = 10;
+        play_button_restart_timer_time = 20;
 
         game.SetActive(false);
         topToShow.SetActive(true);
         bottomToShow.SetActive(true);
+        play_btn_exp.sprite = StateResourcesList[game_id].Explaination;
         //$$$TopVideoRawImage.SetActive(false);
         //$$$BottomVideoRawImage.SetActive(false);
         //switch (current_game)
@@ -1344,13 +1349,13 @@ public class GameManager : MonoBehaviour
                 break;
             case State.G1PreGame:
                 HightlighsOff();
-                ShowPlayButtons(StateResourcesList[1].PreGameTop, StateResourcesList[1].BottomPlayMenu, StateResourcesList[1].GameImg);
+                ShowPlayButtons(StateResourcesList[1].PreGameTop, StateResourcesList[1].BottomPlayMenu, StateResourcesList[1].GameImg,G1_play_buttons_exp, 1);
                 //PreparePostGameVid(1);
                 current_state = State.G1Failure;
                 break;
             case State.G1Failure:
                 HightlighsOff();
-                ShowPlayButtons(StateResourcesList[1].FailureTop, StateResourcesList[1].BottomPlayMenu, StateResourcesList[1].GameImg);
+                ShowPlayButtons(StateResourcesList[1].FailureTop, StateResourcesList[1].BottomPlayMenu, StateResourcesList[1].GameImg, G1_play_buttons_exp, 1);
                 current_state = State.G1Failure;
                 break;
             case State.G1PostGameVid:
@@ -1396,13 +1401,13 @@ public class GameManager : MonoBehaviour
                 break;
             case State.G2PreGame:
                 HightlighsOff();
-                ShowPlayButtons(StateResourcesList[2].PreGameTop, StateResourcesList[2].BottomPlayMenu, StateResourcesList[2].GameImg);
+                ShowPlayButtons(StateResourcesList[2].PreGameTop, StateResourcesList[2].BottomPlayMenu, StateResourcesList[2].GameImg, G2_play_buttons_exp, 2);
                 //PreparePostGameVid(2);
                 current_state = State.G2PreGame;
                 break;
             case State.G2Failure:
                 HightlighsOff();
-                ShowPlayButtons(StateResourcesList[2].FailureTop, StateResourcesList[2].BottomPlayMenu, StateResourcesList[2].GameImg);
+                ShowPlayButtons(StateResourcesList[2].FailureTop, StateResourcesList[2].BottomPlayMenu, StateResourcesList[2].GameImg, G2_play_buttons_exp, 2);
                 current_state = State.G2Failure;
                 break;
             case State.G2PostGameVid:
@@ -1448,13 +1453,13 @@ public class GameManager : MonoBehaviour
                 break;
             case State.G3PreGame:
                 HightlighsOff();
-                ShowPlayButtons(StateResourcesList[3].PreGameTop, StateResourcesList[3].BottomPlayMenu, StateResourcesList[3].GameImg);
+                ShowPlayButtons(StateResourcesList[3].PreGameTop, StateResourcesList[3].BottomPlayMenu, StateResourcesList[3].GameImg, G3_play_buttons_exp, 3);
                 //PreparePostGameVid(3);
                 current_state = State.G3PreGame;
                 break;
             case State.G3Failure:
                 HightlighsOff();
-                ShowPlayButtons(StateResourcesList[3].FailureTop, StateResourcesList[3].BottomPlayMenu, StateResourcesList[3].GameImg);
+                ShowPlayButtons(StateResourcesList[3].FailureTop, StateResourcesList[3].BottomPlayMenu, StateResourcesList[3].GameImg, G3_play_buttons_exp, 3);
                 current_state = State.G3Failure;
                 break;
             case State.G3PostGameVid:
