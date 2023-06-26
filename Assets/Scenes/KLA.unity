@@ -4204,6 +4204,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useConfigFile: 1
+  shouldDelayTransmit: 1
+  delayTime: 1
 --- !u!114 &480147043
 MonoBehaviour:
   m_ObjectHideFlags: 0
